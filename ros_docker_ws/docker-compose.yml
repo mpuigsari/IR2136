@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  ros_noetic:
+    build: .
+    container_name: ros_noetic
+    restart: always
+    network_mode: "host"
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    privileged: true
+
