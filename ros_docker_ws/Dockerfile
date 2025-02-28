@@ -1,66 +1,57 @@
-# Use ROS Noetic (Ubuntu 20.04 base)
-FROM osrf/ros:noetic-desktop-full
+# Use minimal ROS Noetic base image
+FROM ros:noetic-ros-base
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ROS_DISTRO=noetic
-WORKDIR /root/catkin_ws
 
-# Install ROS dependencies
-RUN apt-get update && apt-get install -y \
-    python3-pip \
-    python3-rosdep \
-    python3-rosinstall \
-    python3-rosinstall-generator \
-    python3-wstool \
-    build-essential \
-    ros-noetic-roscpp \
-    ros-noetic-rospy \
-    ros-noetic-sensor-msgs \
-    ros-noetic-std-msgs \
-    ros-noetic-octomap-msgs \
-    ros-noetic-octomap-ros \
-    ros-noetic-octomap-server \
-    ros-noetic-tf \
-    ros-noetic-tf2-ros \
-    ros-noetic-tf2-msgs \
-    ros-noetic-rosbridge-server \
-    && rm -rf /var/lib/apt/lists/*
+# Install required ROS packages and development tools
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y \
+        git \
+        python3-pip \
+        ros-noetic-catkin \
+        ros-noetic-vision-msgs \
+        ros-noetic-rosbridge-server \
+        ros-noetic-image-transport-plugins \
+        ros-noetic-image-geometry \
+        ros-noetic-image-view \
+        ros-noetic-cv-bridge \
+        ros-noetic-pcl-ros \
+        ros-noetic-image-transport \
+        ros-noetic-message-filters \
+        ros-noetic-rviz \
+        ros-noetic-message-generation \
+        ros-noetic-message-runtime \
+        python3-catkin-tools && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Ensure 'python' points to 'python3'
-RUN ln -s /usr/bin/python3 /usr/bin/python
+# Create the catkin workspace inside the container
+RUN mkdir -p /root/catkin_ws/src && \
+    /bin/bash -c "source /opt/ros/noetic/setup.bash && cd /root/catkin_ws/src && catkin_init_workspace"
 
-# Install Python dependencies, including 'getch'
-RUN pip3 install --no-cache-dir getch
+# Clone ultralytics_ros repository
+RUN git clone -b noetic-devel https://github.com/Alpaca-zip/ultralytics_ros.git /root/catkin_ws/src/ultralytics_ros
 
-# Initialize rosdep
-RUN rosdep update
+# Copy custom YOLO model into ultralytics_ros/models/
+COPY yolov8s-seg.pt /root/catkin_ws/src/ultralytics_ros/models/yolov8s-seg.pt
 
-# Create a catkin workspace
-RUN mkdir -p /root/catkin_ws/src
+# Install Python dependencies inside the container
+RUN pip3 install -r /root/catkin_ws/src/ultralytics_ros/requirements.txt
 
-# Copy all Unity ROS packages into the image
-COPY unity_ros_pkgs/ /root/catkin_ws/src/
+# Build the ROS workspace using `catkin_make`
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && cd /root/catkin_ws && catkin_make"
 
-# Ensure Python scripts are executable
-RUN for pkg in controllerpkg converter_pkg misc octomap_mapping unity_decoder; do \
-        if [ -d "/root/catkin_ws/src/$pkg/src" ]; then \
-            chmod +x /root/catkin_ws/src/$pkg/src/*.py; \
-        fi; \
-    done
+# Source workspace in bashrc for all new shells
+RUN echo "source /root/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
-# Build the ROS workspace inside the image
-RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && cd /root/catkin_ws && \
-    catkin_make && \
-    source devel/setup.bash"
-
-# Ensure ROS is sourced on login
-RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
-RUN echo "source /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
-
-# Copy the startup script
+# Copy entrypoint script and make it executable
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Set the container's entrypoint
+# Set entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
+
+# Default command: keep container interactive
+CMD ["bash"]
+
