@@ -20,18 +20,32 @@ RUN apt-get update && apt-get upgrade -y && \
         ros-noetic-image-transport \
         ros-noetic-message-filters \
         ros-noetic-rviz \
+        ros-noetic-rqt \
+    	ros-noetic-rqt-common-plugins \
+    	ros-noetic-rqt-image-view \
         ros-noetic-message-generation \
         ros-noetic-message-runtime \
         python3-catkin-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Ensure 'python' points to 'python3'
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Install Python dependencies, including 'getch'
+RUN pip3 install --no-cache-dir getch
+
 # Create the catkin workspace inside the container
 RUN mkdir -p /root/catkin_ws/src && \
     /bin/bash -c "source /opt/ros/noetic/setup.bash && cd /root/catkin_ws/src && catkin_init_workspace"
 
 # Clone ultralytics_ros repository
-RUN git clone -b noetic-devel https://github.com/Alpaca-zip/ultralytics_ros.git /root/catkin_ws/src/ultralytics_ros
+#RUN git clone -b noetic-devel https://github.com/Alpaca-zip/ultralytics_ros.git /root/catkin_ws/src/ultralytics_ros
+
+# Instead of cloning from GitHub, copy the modified repository from the host
+COPY ultralytics_ros /root/catkin_ws/src/ultralytics_ros
+# Copy Unity ROS package for teleoperation into the image
+COPY unity_ros_pkgs/controllerpkg /root/catkin_ws/src/controllerpkg
 
 # Copy custom YOLO model into ultralytics_ros/models/
 COPY yolov8s-seg.pt /root/catkin_ws/src/ultralytics_ros/models/yolov8s-seg.pt
