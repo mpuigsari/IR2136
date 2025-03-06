@@ -47,9 +47,6 @@ COPY ultralytics_ros /root/catkin_ws/src/ultralytics_ros
 # Copy Unity ROS package for teleoperation into the image
 COPY unity_ros_pkgs/controllerpkg /root/catkin_ws/src/controllerpkg
 
-# Copy custom YOLO model into ultralytics_ros/models/
-COPY yolov8s-seg.pt /root/catkin_ws/src/ultralytics_ros/models/yolov8s-seg.pt
-
 # Install Python dependencies inside the container
 RUN pip3 install -r /root/catkin_ws/src/ultralytics_ros/requirements.txt
 
