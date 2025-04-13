@@ -89,6 +89,7 @@ docker exec -it ros_yolo bash
 rqt &
 rosrun controllerpkg key_publisher.py
 ```
+
 ![Segmentation Overview](/media/setup.gif)
 
 ---
@@ -98,14 +99,6 @@ rosrun controllerpkg key_publisher.py
 - YOLOv8 model in `ultralytics_ros` performs real-time segmentation
 - Results are published to `/yolo_result` and `/yolo_image`
 - `rqt` visualizes detections, and the robot can be controlled via keyboard
-
----
-
-## 🛠️ Future Work
-- Integrate autonomous navigation using detection feedback
-- Convert YOLO model to ONNX/TensorRT for faster inference
-- Improve segmentation accuracy with more data and tuning
-
 
 ---
 
