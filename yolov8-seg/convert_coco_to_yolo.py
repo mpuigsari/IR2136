@@ -3,7 +3,7 @@ import json
 import shutil
 
 # Define paths
-base_dir = "/home/max/Documents/GitHub/IR2136-Proyecto/yolov8-seg/coco_database"
+base_dir = "/home/max/Documents/GitHub/IR2136-Proyecto/yolov8-seg/coco_dataset_2"
 output_dir = "/home/max/Documents/GitHub/IR2136-Proyecto/yolov8-seg/yolo_dataset"
 splits = ["train", "valid", "test"]
 

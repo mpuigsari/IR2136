@@ -56,6 +56,9 @@ Custom dataset creation and training pipeline:
 
 > View dataset here: [Roboflow project](https://universe.roboflow.com/ir2136/underwater-pipeline-segmentation)
 
+
+![Segmentation Overview](/media/segmentation.gif)
+
 ---
 
 ## 🚀 How to Run the Project
@@ -87,6 +90,8 @@ rqt &
 rosrun controllerpkg key_publisher.py
 ```
 
+![Segmentation Overview](/media/setup.gif)
+
 ---
 
 ## 🔄 Data Flow Summary
@@ -94,25 +99,6 @@ rosrun controllerpkg key_publisher.py
 - YOLOv8 model in `ultralytics_ros` performs real-time segmentation
 - Results are published to `/yolo_result` and `/yolo_image`
 - `rqt` visualizes detections, and the robot can be controlled via keyboard
-
----
-
-## 🛠️ Future Work
-- Integrate autonomous navigation using detection feedback
-- Convert YOLO model to ONNX/TensorRT for faster inference
-- Improve segmentation accuracy with more data and tuning
-
----
-
-## 📁 Repository Structure (Partial)
-```
-ros_docker_ws/
-├── ultralytics_ros/         # YOLOv8 ROS integration
-├── unity_ros_pkgs/
-│   └── controllerpkg/       # Keyboard teleoperation
-├── pipelinev2_yolov8s-seg.pt  # Trained model
-└── docker-compose.yml
-```
 
 ---
 

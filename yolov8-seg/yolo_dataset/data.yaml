@@ -1,7 +1,8 @@
-path: /home/max/Documents/GitHub/IR2136-Proyecto/yolov8-seg/yolo_dataset  # Path to dataset
-train: images/train  # Training images directory
-val: images/valid  # Validation images directory
-test: images/test  # Testing images directory
+path: /home/max/Documents/GitHub/IR2136-Proyecto/yolov8-seg/yolo_dataset
+train: images/train
+val: images/valid
+test: images/test  # Optional
 
-nc: 4  # Number of classes (modify based on your dataset)
-names: ["pipeline", "pipeline", "pipeline-fissure", "pipeline-shadow"]
+nc: 4  # Number of custom classes
+
+names: ["none", "pipeline", "pipeline-fissure", "pipeline-shadow"]
